@@ -82,9 +82,7 @@ See `third_party.md` for licensing and attributions.
 
 ## Showcase
 
-```
-// TODO: Record
-```
+![vulkan-suntemple](https://github.com/user-attachments/assets/e4271763-e0f2-4cd7-9482-32bad0d7cf10)
 
 ## Controls
 
@@ -101,6 +99,5 @@ See `third_party.md` for licensing and attributions.
 
 ## TODOs
 
-* [ ] Record showcase
 * [ ] Implement emission and [bloom](https://learnopengl.com/Advanced-Lighting/Bloom)
 * [ ] Implement [mesh data optimisations](https://github.com/niklasfrykholm/blog/blob/master/2009/the-bitsquid-low-level-animation-system.md)
