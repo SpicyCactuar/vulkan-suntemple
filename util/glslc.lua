@@ -4,7 +4,7 @@
 -- a M1 mac will do.
 
 local binname = nil;
-local shaderc = "third_party/shaderc";
+local shaderc = "third-party/shaderc";
 
 local host = os.host();
 

@@ -57,7 +57,7 @@ workspace "vksuntemple"
 	filter "*"
 
 -- Third party dependencies
-include "third_party" 
+include "third-party"
 
 -- GLSLC helpers
 dofile( "util/glslc.lua" )

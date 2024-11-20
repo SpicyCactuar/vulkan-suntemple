@@ -23,7 +23,7 @@ vulkan-suntemple/
 ├── vkutils/               # Application source code
 ├── premake5.lua           # Premake 5 configuration
 ├── premake5(.*)           # Bundled Premake 5 executables
-├── third_party.md         # Third party libraries' licenses
+├── third-party.md         # Third party libraries' licenses
 └── README.md              # Project README
 ```
 
@@ -78,7 +78,7 @@ Baking is required to be run successfully before application.
 
 A few additional supporting libraries are bundled. Files were selectively bundled as needed.
 
-See `third_party.md` for licensing and attributions.
+See `third-party.md` for licensing and attributions.
 
 ## Showcase
 
