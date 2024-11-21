@@ -43,8 +43,8 @@ namespace vkutils {
     VulkanWindow make_vulkan_window();
 
     struct SwapChanges {
-        bool changedSize: 1;
-        bool changedFormat: 1;
+        bool changedSize = false;
+        bool changedFormat = false;
     };
 
     SwapChanges recreate_swapchain(VulkanWindow&);

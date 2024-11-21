@@ -145,7 +145,7 @@ namespace vkutils {
         std::uint32_t requiredExtensionsCount = 0;
         char const** requiredExtensions = glfwGetRequiredInstanceExtensions(&requiredExtensionsCount);
         for (std::uint32_t i = 0; i < requiredExtensionsCount; ++i) {
-            if (!supportedExtensions.count(requiredExtensions[i])) {
+            if (!supportedExtensions.contains(requiredExtensions[i])) {
                 throw vkutils::Error("GLFW/Vulkan: required instance extension %s not supported",
                                      requiredExtensions[i]);
             }
@@ -154,13 +154,13 @@ namespace vkutils {
 
         // Validation layers support.
 #		if !defined(NDEBUG) // debug builds only
-        if (supportedLayers.count("VK_LAYER_KHRONOS_validation")) {
+        if (supportedLayers.contains("VK_LAYER_KHRONOS_validation")) {
             enabledLayers.emplace_back("VK_LAYER_KHRONOS_validation");
         }
 
-        if (supportedExtensions.count("VK_EXT_debug_utils")) {
+        if (supportedExtensions.contains(VK_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
             enableDebugUtils = true;
-            enabledExensions.emplace_back("VK_EXT_debug_utils");
+            enabledExensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         }
 #		endif // ~ debug builds
 
@@ -309,7 +309,7 @@ namespace vkutils {
         // oldSwapchain member of VkSwapchainCreateInfoKHR.
         VkSwapchainKHR oldSwapchain = window.swapchain;
 
-        for (auto view : window.swapViews) {
+        for (const auto view : window.swapViews) {
             vkDestroyImageView(window.device, view, nullptr);
         }
 

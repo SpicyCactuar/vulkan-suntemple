@@ -11,7 +11,6 @@
  * internally by both vulkan_context.cpp and vulkan_window.cpp. These
  * functions were previously defined locally in vulkan_context.cpp
  */
-
 namespace vkutils {
     namespace detail {
         std::unordered_set<std::string> get_instance_layers();

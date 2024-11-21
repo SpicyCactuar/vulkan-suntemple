@@ -1,8 +1,7 @@
 #include "vkbuffer.hpp"
 
-#include <utility>
-
 #include <cassert>
+#include <utility>
 
 #include "error.hpp"
 #include "to_string.hpp"
