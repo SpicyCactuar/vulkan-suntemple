@@ -65,7 +65,7 @@ IndexedMesh::IndexedMesh()
       aabbMax(std::numeric_limits<float>::min()) {
 }
 
-IndexedMesh make_indexed_mesh(const TriangleSoup& soup, float errorTolerance) {
+IndexedMesh makeIndexedMesh(const TriangleSoup& soup, float errorTolerance) {
     // Compute bounding volume
     glm::vec3 bmin(std::numeric_limits<float>::max());
     glm::vec3 bmax(std::numeric_limits<float>::min());

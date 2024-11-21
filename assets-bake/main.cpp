@@ -31,13 +31,6 @@ namespace {
      * from being misidentified as text.
      */
     constexpr char kFileMagic[16] = "\0\0SPICYMESH";
-
-    /*
-     * Note: change the file variant if you change the file format!
-     * Suggestion: use 'uid-tag'. For example, I would use "scsmbil-tan" to
-     * indicate that this is a custom format by myself (=scsmbil) with
-     * additional tangent space information.
-     */
     constexpr char kFileVariant[16] = "spicy";
 
     /*
@@ -45,7 +38,7 @@ namespace {
      */
     constexpr char kTextureFallbackR1[] = "assets-src/r1.png";
     constexpr char kTextureFallbackRGBA1111[] = "assets-src/rgba1111.png";
-    constexpr char kTextureFallbackRGBA0011[] = "assets-src/rgba050501.png";
+    constexpr char kTextureFallbackRRGGB05051[] = "assets-src/rrggb05051.png";
     constexpr char kTextureFallbackRGB000[] = "assets-src/rgb000.png";
 
     struct TextureInfo {
@@ -125,7 +118,7 @@ namespace {
         const std::filesystem::path textureDir = basename.string() + "-tex";
 
         // Load input model
-        const auto model = normalize(load_compressed_obj(inputObj));
+        const auto model = normalize(loadCompressedObj(inputObj));
 
         std::size_t inputVerts = 0;
         for (const auto& mesh : model.meshes) {
@@ -218,7 +211,7 @@ namespace {
                 material.metalnessTexturePath = kTextureFallbackR1;
             }
             if (material.normalMapTexturePath.empty()) {
-                material.normalMapTexturePath = kTextureFallbackRGBA0011;
+                material.normalMapTexturePath = kTextureFallbackRRGGB05051;
             }
             if (material.emissiveTexturePath.empty()) {
                 material.emissiveTexturePath = kTextureFallbackRGB000;
@@ -238,7 +231,7 @@ namespace {
         }
     }
 
-    void writeString(const char* string, FILE* out) {
+    void writeString(FILE* out, const char* string) {
         // Write a string
         // Format:
         //  - uint32_t : N = length of string in bytes, including terminating '\0'
@@ -277,7 +270,7 @@ namespace {
 
         for (const auto& tex : orderedUnique) {
             assert(tex);
-            writeString(tex->newPath.c_str(), out);
+            writeString(out, tex->newPath.c_str());
 
             std::uint8_t channels = tex->channels;
             checkedWrite(out, sizeof(channels), &channels);
@@ -351,7 +344,6 @@ namespace {
             checkedWrite(out, sizeof(glm::vec2) * vertexCount, indexedMesh.texCoordinates.data());
             checkedWrite(out, sizeof(glm::vec4) * vertexCount, indexedMesh.tangent.data());
 
-
             checkedWrite(out, sizeof(std::uint32_t) * indexCount, indexedMesh.indices.data());
         }
     }
@@ -381,7 +373,7 @@ namespace {
                 soup.normals.emplace_back(model.normals[i]);
             }
 
-            indexed.emplace_back(make_indexed_mesh(soup, errorTolerance));
+            indexed.emplace_back(makeIndexedMesh(soup, errorTolerance));
         }
 
         return indexed;

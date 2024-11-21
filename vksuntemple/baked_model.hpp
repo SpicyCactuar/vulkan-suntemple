@@ -104,5 +104,5 @@ namespace baked {
         std::vector<BakedMeshData> meshes;
     };
 
-    BakedModel load_baked_model(char const* aModelPath);
+    BakedModel loadBakedModel(char const* modelPath);
 }

@@ -12,7 +12,7 @@
 
 #include "../vkutils/error.hpp"
 
-InputModel load_compressed_obj(const char* rawPath) {
+InputModel loadCompressedObj(const char* rawPath) {
     assert(rawPath);
 
     // Ask rapidobj to load the requested file
@@ -101,7 +101,7 @@ InputModel load_compressed_obj(const char* rawPath) {
             assert(faceId < shape.mesh.material_ids.size());
             const auto matId = shape.mesh.material_ids[faceId];
 
-            assert(matId < int(loadedModel.materials.size()));
+            assert(matId < static_cast<int>(loadedModel.materials.size()));
             activeMaterials.emplace(matId);
         }
 

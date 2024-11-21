@@ -4,159 +4,155 @@
 #include <cstring>
 
 #include "../vkutils/error.hpp"
-namespace baked
-{
-	// See assets-bake/main.cpp for more info
-	constexpr char kFileMagic[16] = "\0\0SPICYMESH";
-	constexpr char kFileVariant[16] = "spicy";
 
-	constexpr std::uint32_t kMaxString = 32*1024;
+namespace baked {
+    // See assets-bake/main.cpp for more info
+    constexpr char kFileMagic[16] = "\0\0SPICYMESH";
+    constexpr char kFileVariant[16] = "spicy";
 
-	void checked_read_( FILE* aFin, std::size_t aBytes, void* aBuffer )
-	{
-		auto ret = std::fread( aBuffer, 1, aBytes, aFin );
+    constexpr std::uint32_t kMaxString = 32 * 1024;
 
-		if( aBytes != ret )
-			throw vkutils::Error( "checked_read_(): expected %zu bytes, got %zu", aBytes, ret );
-	}
+    void checkedRead(FILE* input, const std::size_t bytes, void* buffer) {
+        const auto ret = std::fread(buffer, 1, bytes, input);
 
-	std::uint32_t read_uint32_( FILE* aFin )
-	{
-		std::uint32_t ret;
-		checked_read_( aFin, sizeof(std::uint32_t), &ret );
-		return ret;
-	}
-	std::string read_string_( FILE* aFin )
-	{
-		const auto length = read_uint32_( aFin );
+        if (bytes != ret) {
+            throw vkutils::Error("checked_read_(): expected %zu bytes, got %zu", bytes, ret);
+        }
+    }
 
-		if( length >= kMaxString )
-			throw vkutils::Error( "read_string_(): unexpectedly long string (%u bytes)", length );
+    std::uint32_t readUint32(FILE* input) {
+        std::uint32_t ret;
+        checkedRead(input, sizeof(std::uint32_t), &ret);
+        return ret;
+    }
 
-		std::string ret;
-		ret.resize( length );
+    std::string readString(FILE* input) {
+        const auto length = readUint32(input);
 
-		checked_read_( aFin, length, ret.data() );
-		return ret;
-	}
+        if (length >= kMaxString) {
+            throw vkutils::Error("read_string_(): unexpectedly long string (%u bytes)", length);
+        }
 
-	BakedModel load_baked_model_( FILE* aFin, char const* aInputName )
-	{
-		BakedModel ret;
+        std::string ret;
+        ret.resize(length);
 
-		// Figure out base path
-		char const* pathBeg = aInputName;
-		char const* pathEnd = std::strrchr( pathBeg, '/' );
+        checkedRead(input, length, ret.data());
+        return ret;
+    }
 
-		std::string const prefix = pathEnd
-			? std::string( pathBeg, pathEnd+1 )
-			: ""
-		;
+    BakedModel loadBakedModelFromFile(FILE* input, char const* inputName) {
+        BakedModel bakedModel;
 
-		// Read header and verify file magic and variant
-		char magic[16];
-		checked_read_( aFin, 16, magic );
+        // Figure out base path
+        char const* pathBeg = inputName;
+        char const* pathEnd = std::strrchr(pathBeg, '/');
 
-		if( 0 != std::memcmp( magic, kFileMagic, 16 ) )
-			throw vkutils::Error( "load_baked_model_(): %s: invalid file signature!", aInputName );
+        std::string const prefix = pathEnd ? std::string(pathBeg, pathEnd + 1) : "";
 
-		char variant[16];
-		checked_read_( aFin, 16, variant );
+        // Read header and verify file magic and variant
+        char magic[16];
+        checkedRead(input, 16, magic);
 
-		if( 0 != std::memcmp( variant, kFileVariant, 16 ) )
-			throw vkutils::Error( "load_baked_model_(): %s: file variant is '%s', expected '%s'", aInputName, variant, kFileVariant );
+        if (0 != std::memcmp(magic, kFileMagic, 16)) {
+            throw vkutils::Error("loadBakedModelFromFile(): %s: invalid file signature!", inputName);
+        }
 
-		// Read texture info
-		const auto textureCount = read_uint32_( aFin );
-		for( std::uint32_t i = 0; i < textureCount; ++i )
-		{
-			BakedTextureInfo info;
-			info.path = prefix + read_string_( aFin );
+        char variant[16];
+        checkedRead(input, 16, variant);
 
-			std::uint8_t channels;
-			checked_read_( aFin, sizeof(std::uint8_t), &channels );
-			info.channels = channels;
+        if (0 != std::memcmp(variant, kFileVariant, 16)) {
+            throw vkutils::Error("loadBakedModelFromFile(): %s: file variant is '%s', expected '%s'", inputName,
+                                 variant,
+                                 kFileVariant);
+        }
 
-			ret.textures.emplace_back( std::move(info) );
-		}
+        // Read texture info
+        const auto textureCount = readUint32(input);
+        for (std::uint32_t i = 0; i < textureCount; ++i) {
+            const std::string name = readString(input);
+            std::uint8_t channels;
+            checkedRead(input, sizeof(std::uint8_t), &channels);
 
-		// Read material info
-		const auto materialCount = read_uint32_( aFin );
-		for( std::uint32_t i = 0; i < materialCount; ++i )
-		{
-			BakedMaterialInfo info;
-			info.baseColorTextureId = read_uint32_( aFin );
-			info.roughnessTextureId = read_uint32_( aFin );
-			info.metalnessTextureId = read_uint32_( aFin );
-			info.alphaMaskTextureId = read_uint32_( aFin );
-			info.normalMapTextureId = read_uint32_( aFin );
-			info.emissiveTextureId = read_uint32_( aFin );
+            BakedTextureInfo info{
+                .path = prefix + name,
+                .channels = channels
+            };
 
-			assert( info.baseColorTextureId < ret.textures.size() );
-			assert( info.roughnessTextureId < ret.textures.size() );
-			assert( info.metalnessTextureId < ret.textures.size() );
-			assert( info.emissiveTextureId < ret.textures.size() );
+            bakedModel.textures.emplace_back(std::move(info));
+        }
 
-			ret.materials.emplace_back( std::move(info) );
-		}
+        // Read material info
+        const auto materialCount = readUint32(input);
+        for (std::uint32_t i = 0; i < materialCount; ++i) {
+            BakedMaterialInfo info{
+                .baseColorTextureId = readUint32(input),
+                .roughnessTextureId = readUint32(input),
+                .metalnessTextureId = readUint32(input),
+                .alphaMaskTextureId = readUint32(input),
+                .normalMapTextureId = readUint32(input),
+                .emissiveTextureId = readUint32(input)
+            };
 
-		// Read mesh data
-		const auto meshCount = read_uint32_( aFin );
-		for( std::uint32_t i = 0; i < meshCount; ++i )
-		{
-			BakedMeshData data;
-			data.materialId = read_uint32_( aFin );
-			assert( data.materialId < ret.materials.size() );
+            assert(info.baseColorTextureId < bakedModel.textures.size());
+            assert(info.roughnessTextureId < bakedModel.textures.size());
+            assert(info.metalnessTextureId < bakedModel.textures.size());
+            assert(info.emissiveTextureId < bakedModel.textures.size());
 
-			const auto V = read_uint32_( aFin );
-			const auto I = read_uint32_( aFin );
+            bakedModel.materials.emplace_back(std::move(info));
+        }
 
-			data.positions.resize( V );
-			checked_read_( aFin, V*sizeof(glm::vec3), data.positions.data() );
+        // Read mesh data
+        const auto meshCount = readUint32(input);
+        for (std::uint32_t i = 0; i < meshCount; ++i) {
+            BakedMeshData data;
+            data.materialId = readUint32(input);
+            assert(data.materialId < bakedModel.materials.size());
 
-			data.normals.resize( V );
-			checked_read_( aFin, V*sizeof(glm::vec3), data.normals.data() );
+            const auto V = readUint32(input);
+            const auto I = readUint32(input);
 
-			data.texcoords.resize( V );
-			checked_read_( aFin, V*sizeof(glm::vec2), data.texcoords.data() );
+            data.positions.resize(V);
+            checkedRead(input, V * sizeof(glm::vec3), data.positions.data());
 
-			data.tangents.resize( V );
-			checked_read_( aFin, V*sizeof(glm::vec4), data.tangents.data() );
+            data.normals.resize(V);
+            checkedRead(input, V * sizeof(glm::vec3), data.normals.data());
 
+            data.texcoords.resize(V);
+            checkedRead(input, V * sizeof(glm::vec2), data.texcoords.data());
 
-			data.indices.resize( I );
-			checked_read_( aFin, I*sizeof(std::uint32_t), data.indices.data() );
+            data.tangents.resize(V);
+            checkedRead(input, V * sizeof(glm::vec4), data.tangents.data());
 
-			ret.meshes.emplace_back( std::move(data) );
-		}
+            data.indices.resize(I);
+            checkedRead(input, I * sizeof(std::uint32_t), data.indices.data());
 
-		// Check
-		char byte;
-		const auto check = std::fread( &byte, 1, 1, aFin );
+            bakedModel.meshes.emplace_back(std::move(data));
+        }
 
-		if( 0 != check )
-			std::fprintf( stderr, "Note: '%s' contains trailing bytes\n", aInputName );
+        // Check
+        char byte;
+        const auto check = std::fread(&byte, 1, 1, input);
 
-		return ret;
-	}
+        if (0 != check) {
+            std::fprintf(stderr, "Note: '%s' contains trailing bytes\n", inputName);
+        }
 
-	BakedModel load_baked_model( char const* aModelPath )
-	{
-		FILE* fin = std::fopen( aModelPath, "rb" );
-		if( !fin )
-			throw vkutils::Error( "load_baked_model(): unable to open '%s' for reading", aModelPath );
+        return bakedModel;
+    }
 
-		try
-		{
-			auto ret = load_baked_model_( fin, aModelPath );
-			std::fclose( fin );
-			return ret;
-		}
-		catch( ... )
-		{
-			std::fclose( fin );
-			throw;
-		}
-	}
+    BakedModel loadBakedModel(char const* modelPath) {
+        FILE* modelFile = std::fopen(modelPath, "rb");
+        if (!modelFile) {
+            throw vkutils::Error("loadBakedModel(): unable to open '%s' for reading", modelPath);
+        }
 
+        try {
+            auto ret = loadBakedModelFromFile(modelFile, modelPath);
+            std::fclose(modelFile);
+            return ret;
+        } catch (...) {
+            std::fclose(modelFile);
+            throw;
+        }
+    }
 }

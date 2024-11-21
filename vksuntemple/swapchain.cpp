@@ -7,7 +7,7 @@
 
 namespace swapchain {
     std::vector<vkutils::Framebuffer> create_swapchain_framebuffers(const vkutils::VulkanWindow& window,
-                                                                    VkRenderPass renderPass) {
+                                                                    const VkRenderPass renderPass) {
         std::vector<vkutils::Framebuffer> framebuffers;
         framebuffers.reserve(window.swapViews.size());
 

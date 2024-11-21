@@ -2,4 +2,4 @@
 
 #include "input_model.hpp"
 
-InputModel load_compressed_obj(const char* rawPath);
+InputModel loadCompressedObj(const char* rawPath);

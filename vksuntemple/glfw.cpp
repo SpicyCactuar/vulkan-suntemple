@@ -202,17 +202,17 @@ namespace glfw {
         }
     }
 
-    void glfw_callback_motion(GLFWwindow* window, double x, double y) {
+    void glfw_callback_motion(GLFWwindow* window, const double x, const double y) {
         const auto state = static_cast<state::State*>(glfwGetWindowUserPointer(window));
         assert(state);
         state->mouseX = static_cast<float>(x);
         state->mouseY = static_cast<float>(y);
     }
 
-    void setup_window(const vkutils::VulkanWindow& vulkanWindow, state::State& state) {
-        glfwSetWindowUserPointer(vulkanWindow.window, &state);
-        glfwSetKeyCallback(vulkanWindow.window, &glfw::glfw_callback_key);
-        glfwSetMouseButtonCallback(vulkanWindow.window, &glfw::glfw_callback_button);
-        glfwSetCursorPosCallback(vulkanWindow.window, &glfw::glfw_callback_motion);
+    void setup_window(const vkutils::VulkanWindow& window, state::State& state) {
+        glfwSetWindowUserPointer(window.window, &state);
+        glfwSetKeyCallback(window.window, &glfw::glfw_callback_key);
+        glfwSetMouseButtonCallback(window.window, &glfw::glfw_callback_button);
+        glfwSetCursorPosCallback(window.window, &glfw::glfw_callback_motion);
     }
 }
