@@ -10,6 +10,8 @@ The renderer showcase different techniques and features:
 * Alpha masking
 * Tone mapping
 
+![vulkan-suntemple](https://github.com/user-attachments/assets/e4271763-e0f2-4cd7-9482-32bad0d7cf10)
+
 ## Project Structure
 
 ```plaintext
@@ -63,6 +65,20 @@ Executables have `.exe` extension for all platforms, but binaries are platform-s
 
 Baking is required to be run successfully before application.
 
+## Controls
+
+| Key(s)                  | Action                                                                 |
+|-------------------------|------------------------------------------------------------------------|
+| `Right Click`           | Toggle camera rotation with mouse                                      |
+| `W` `A` `S` `D` `E` `Q` | Move camera around                                                     |
+| `I` / `L`               | Reset camera to initial/light position                                 |
+| `Shift` / `Ctrl`        | Slow/fast speed modifiers for camera controls                          |                                              |
+| `1 - 8`                 | Display different visualisation modes (see `state::VisualisationMode`) |
+| `Alt` + `1 - 7`         | Display different PBR terms (see `state::PBRTerm`)                     |
+| `N` / `O` / `P`         | Toggle normal mapping, shadows, PCF (see `state::ShadingDetails`)      |
+| `T`                     | Toggle Reinhard tone mapping                                           |
+| `Esc`                   | Close application                                                      |
+
 ## Technologies
 
 * **C++**: `>= C++20`
@@ -76,26 +92,9 @@ Baking is required to be run successfully before application.
 * **stb_image**: `v2.29` (Bundled)
 * **stb_image_write**: `v1.16` (Bundled)
 
-A few additional supporting libraries are bundled. Files were selectively bundled as needed.
+A few additional supporting libraries are leveraged. Files were selectively bundled as needed.
 
 See `third-party.md` for licensing and attributions.
-
-## Showcase
-
-![vulkan-suntemple](https://github.com/user-attachments/assets/e4271763-e0f2-4cd7-9482-32bad0d7cf10)
-
-## Controls
-
-| Key(s)                  | Action                                                                 |
-|-------------------------|------------------------------------------------------------------------|
-| `W` `A` `S` `D` `E` `Q` | Move camera around                                                     |
-| `L` / `I`               | Reset camera to initial/light position                                 |
-| `Shift` / `Ctrl`        | Slow/fast speed modifiers for camera controls                          |                                              |
-| `1 - 8`                 | Display different visualisation modes (see `state::VisualisationMode`) |
-| `Alt` + `1 - 7`         | Display different PBR terms (see `state::PBRTerm`)                     |
-| `N` / `O` / `P`         | Toggle normal mapping, shadows, PCF (see `state::ShadingDetails`)      |
-| `T`                     | Toggle Reinhard tone mapping                                           |
-| `Esc`                   | Close application                                                      |
 
 ## TODOs
 
