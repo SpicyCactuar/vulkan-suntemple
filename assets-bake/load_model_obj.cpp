@@ -12,7 +12,7 @@
 
 #include "../vkutils/error.hpp"
 
-InputModel loadCompressedObj(const char* rawPath) {
+InputModel load_compressed_obj(const char* rawPath) {
     assert(rawPath);
 
     // Ask rapidobj to load the requested file

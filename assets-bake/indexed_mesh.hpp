@@ -27,7 +27,7 @@ struct IndexedMesh {
     IndexedMesh();
 };
 
-IndexedMesh makeIndexedMesh(
+IndexedMesh make_indexed_mesh(
     const TriangleSoup& soup,
     float errorTolerance = 1e-6f
 );

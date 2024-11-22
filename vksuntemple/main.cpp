@@ -130,7 +130,7 @@ int main() try {
                                   screenEffectsUBO);
 
     // Load model
-    const baked::BakedModel model = baked::loadBakedModel(cfg::sunTempleObjZstdPath);
+    const baked::BakedModel model = baked::load_baked_model(cfg::sunTempleObjZstdPath);
 
     // Load materials
     // Keeps both Images and ImageViews alive for the duration of the render loop
