@@ -1,16 +1,16 @@
 # Vulkan Suntemple
 
+![vulkan-suntemple](https://github.com/user-attachments/assets/e4271763-e0f2-4cd7-9482-32bad0d7cf10)
+
 Vulkan application that renders the popular [Suntemple](https://developer.nvidia.com/ue4-sun-temple) scene.
 The renderer showcase different techniques and features:
 
 * Render-to-texture pipeline
 * Physically-based rendering (_roughnes-metalness_ workflow)
-* Shadow mapping
+* Shadow mapping - Single point light
 * Normal mapping
-* Alpha masking
-* Tone mapping
-
-![vulkan-suntemple](https://github.com/user-attachments/assets/e4271763-e0f2-4cd7-9482-32bad0d7cf10)
+* Alpha masking - Opaque and transparent objects go through separate rendering passes
+* Tone mapping - Operator applied as post-processing step to the rendered scene texture
 
 ## Project Structure
 
